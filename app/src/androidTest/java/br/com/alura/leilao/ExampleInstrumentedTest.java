@@ -29,15 +29,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        ListaLeilaoAdapter adapter = new ListaLeilaoAdapter(appContext);
-
-        adapter.atualiza(new ArrayList<>(Arrays.asList(
-                new Leilao("Console"),
-                new Leilao("Computador")
-        )));
-
-        int quantidadeDevolvida = adapter.getItemCount();
-
-        assertThat(quantidadeDevolvida, is(2));
+        assertEquals("br.com.alura.leila", InstrumentationRegistry.getTargetContext());
     }
 }
