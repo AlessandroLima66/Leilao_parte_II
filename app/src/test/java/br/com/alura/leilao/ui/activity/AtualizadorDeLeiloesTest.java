@@ -1,7 +1,5 @@
 package br.com.alura.leilao.ui.activity;
 
-import android.content.Context;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -22,7 +20,7 @@ import br.com.alura.leilao.ui.recyclerview.adapter.ListaLeilaoAdapter;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AtualizadorDeLeiloesTest {
@@ -33,7 +31,7 @@ public class AtualizadorDeLeiloesTest {
     private LeilaoWebClient client;
 
     @Mock
-    private Context context;
+    private AtualizadorDeLeiloes.ErroCarregaLeilaoListener listenerErro;
 
     @Test
     public void deve_AtualizarListaDeLeiloes_QuandoBuscarLeiloesDaAPI() {
@@ -51,11 +49,11 @@ public class AtualizadorDeLeiloesTest {
             }
         }).when(client).todos(any(RespostaListener.class));
 
-        atualizador.buscaLeiloes(adapter, client, context);
+        atualizador.buscaLeiloes(adapter, client, listenerErro);
 
         /*Verificando se os métodos que devem ser executados, são executados*/
-        Mockito.verify(client).todos(Mockito.any(RespostaListener.class));
-        Mockito.verify(adapter).atualiza(new ArrayList<>(Arrays.asList(
+        verify(client).todos(Mockito.any(RespostaListener.class));
+        verify(adapter).atualiza(new ArrayList<>(Arrays.asList(
                 new Leilao("Computador"),
                 new Leilao("Carro")
         )));
@@ -63,8 +61,7 @@ public class AtualizadorDeLeiloesTest {
 
     @Test
     public void deve_ApresentarMensagemDeFalha_QuandoFalharBuscaDeLeiloesDaAPI() {
-        AtualizadorDeLeiloes atualizador = Mockito.spy(new AtualizadorDeLeiloes());
-        doNothing().when(atualizador).mostraMensagemDeFalha(context);
+        AtualizadorDeLeiloes atualizador = new AtualizadorDeLeiloes();
 
         doAnswer(new Answer() { /*Simulando a chamada ao método*/
             @Override
@@ -75,9 +72,9 @@ public class AtualizadorDeLeiloesTest {
             }
         }).when(client).todos(any(RespostaListener.class));
 
-        atualizador.buscaLeiloes(adapter, client, context);
+        atualizador.buscaLeiloes(adapter, client, listenerErro);
 
-        Mockito.verify(atualizador).mostraMensagemDeFalha(context);
+        verify(listenerErro).erroAoCarregarMensagem(anyString());
     }
 
 
